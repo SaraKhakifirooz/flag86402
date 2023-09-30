@@ -1,8 +1,26 @@
-<template>
-    <div class="flex items-center justify-center h-[100vh] overflow-hidden">
+<template class="dark">
+    <!-- <div>
+        <div>Count: {{ count }}</div>
+        <div>isActive: {{ isActive }}</div>
+        <div>
+            <button @click="pause">
+                pause
+            </button>
+            <button @click="resume">
+                resume
+            </button>
+        </div>
+    </div> -->
+    <div @click="isDark">
+        isDark
+    </div>
+    <button @click="toggleDark()">
+        <span class="ml-2">{{ isDark ? 'Dark' : 'Light' }}</span>
+    </button>
+    <div class="flex items-center justify-center h-[100vh] overflow-hidden transition transition-all delay-50">
 
 
-        <div class="w-[30%] bg-gray-200 h-full flex items-center justify-center text-center m-auto transition transition-all delay-150 validateEmail"
+        <div class="w-[30%] bg-gray-200 h-full flex items-center justify-center text-center m-auto transition transition-all delay-50 validateEmail"
             :class="[hitTomato ? 'ml-[-15%]' : '', '']">
             <div>
                 <div class="text-center m-auto cursor-pointer" @click="hitKon">
@@ -70,18 +88,45 @@
 
 
 <script setup>
+import { useTimeoutPoll } from '@vueuse/core'
+import { useTitle, useDark, useToggle, useColorMode } from '@vueuse/core'
 
 const hitTomato = ref(false)
 const timedown = ref(10)
+const count = ref(0)
 const user = ref({
     name: '',
     email: '',
 })
 const reg = ref(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/)
+
 const hitKon = () => {
     hitTomato.value = true;
-
 }
+
+const mode = useColorMode()
+
+
+const isDark = useDark()
+const toggleDark = useToggle(isDark)
+
+const title = computed(() => isDark.value ? '🌙 Good evening!' : '☀️ Good morning!')
+
+console.log(useTitle(title))
+
+watch(isDark, (newVal) => {
+    // toggle the 'dark' class on the documentElement after a delay
+    setTimeout(() => {
+        document.documentElement.classList.toggle('dark', newVal);
+    }, 150);
+});
+
+// async function fetchData() {
+//     await new Promise(resolve => setTimeout(resolve, 1000))
+//     count.value++
+// }
+
+// const { isActive, pause, resume } = useTimeoutPoll(fetchData, 1000)
 
 const cancel = () => {
     user.value.name = '';
